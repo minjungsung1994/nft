@@ -15,8 +15,7 @@ If you want to see the full completed contract go ahead and clone and build this
 
 ```=bash
 git clone https://github.com/near-examples/nft-tutorial.git 
-cd nft-tutorial
-git switch 6.royalty
+cd nft
 yarn build
 yarn start
 ```
