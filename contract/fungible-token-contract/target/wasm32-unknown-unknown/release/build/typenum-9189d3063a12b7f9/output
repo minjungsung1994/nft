@@ -1,0 +1,2 @@
+cargo:rustc-env=TYPENUM_BUILD_CONSTS=/Users/I531482/Projects/personal/rust/nft-tutorial-frontend/contract/fungible-token-contract/target/wasm32-unknown-unknown/release/build/typenum-9189d3063a12b7f9/out/consts.rs
+cargo:rustc-env=TYPENUM_BUILD_OP=/Users/I531482/Projects/personal/rust/nft-tutorial-frontend/contract/fungible-token-contract/target/wasm32-unknown-unknown/release/build/typenum-9189d3063a12b7f9/out/op.rs

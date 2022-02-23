@@ -2,33 +2,37 @@
 # Developer note: near.gitignore will be renamed to .gitignore upon project creation
 # dependencies
 /node_modules
-/neardev
 /.pnp
 .pnp.js
 
-#cache
-.cache
-.parcel-cache
+# build
+/out
+/dist
+/target
 
-#contracts
-target
-notes
+# keys
+/neardev
 
 # testing
 /coverage
 
 # production
-/dist
+/build
 
 # misc
 .DS_Store
-.env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
+/.cache
 
 npm-debug.log*
-yarn.lock
 yarn-debug.log*
 yarn-error.log*
+
+# Added by cargo
+#
+# already existing elements were commented out
+
+#/target
