@@ -1,43 +1,73 @@
 {
-  "name": "nft",
-  "version": "1.0.0",
-  "description": "NEAR NFT Market Reference Implementation",
-  "author": "Minjung Sung",
-  "license": "MIT",
-  "dependencies": {
-    "bn": "^1.0.5",
-    "copy-to-clipboard": "^3.3.1",
-    "near-api-js": "^0.41.0",
-    "near-seed-phrase": "^0.1.0",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2"
+  "name": "nft-mint-frontend",
+  "version": "0.1.0",
+  "license": "UNLICENSED",
+  "scripts": {
+    "build": "npm run build:contract && npm run build:web",
+    "build:contract": "cd contract/nft-contract && ./build.sh && cd ../.. && cd contract/market-contract && ./build.sh && cd ../.. && cd contract/fungible-token-contract && ./build.sh && cd ../..",
+    "build:contract:debug": "cd contract/nft-contract && ./build.sh && cd ../.. && cd contract/market-contract && ./build.sh && cd ../.. && cd contract/fungible-token-contract && ./build.sh && cd ../..",
+    "build:web": "parcel build src/index.html --public-url ./",
+    "dev:deploy:contract": "near dev-deploy",
+    "deploy:contract": "near deploy",
+    "deploy:pages": "gh-pages -d dist/",
+    "deploy": "npm run build && npm run deploy:contract && npm run deploy:pages",
+    "prestart": "npm run build:contract:debug && npm run dev:deploy:contract",
+    "start": "echo The app is starting! It will automatically open in your browser when ready && env-cmd -f ./neardev/dev-account.env parcel src/index.html --open",
+    "dev": "nodemon --watch contract -e rs --exec \"npm run start\"",
+    "test": "npm run build:contract:debug && cd contract && cargo test -- --nocapture && cd .. && jest test --runInBand",
+    "makecontract": "cd contract/nft-contract && ./build.sh && cd ../.. && ls && cd contract/market-contract && ./build.sh && cd ../.."
   },
   "devDependencies": {
-    "@parcel/transformer-image": "^2.0.0-nightly.2338",
-    "@parcel/transformer-sass": "^2.0.0-nightly.716",
-    "buffer": "^6.0.3",
-    "cross-env": "^7.0.3",
-    "eslint": "^7.14.0",
-    "gh-pages": "^3.1.0",
-    "jest": "^26.6.3",
-    "jest-environment-uint8array": "^1.0.0",
-    "node-fetch": "^2.6.1",
-    "parcel": "^2.0.0-beta.3.1",
-    "process": "^0.11.10",
-    "rimraf": "^3.0.2",
-    "sass": "^1.32.8"
+    "@babel/core": "~7.14.0",
+    "@babel/preset-env": "~7.14.0",
+    "@babel/preset-react": "~7.13.13",
+    "babel-jest": "~26.6.2",
+    "env-cmd": "~10.1.0",
+    "gh-pages": "~3.1.0",
+    "jest": "~26.6.2",
+    "jest-environment-node": "~26.6.2",
+    "near-cli": "~2.1.1",
+    "nodemon": "~2.0.3",
+    "parcel-bundler": "~1.12.4",
+    "react-test-renderer": "~17.0.1",
+    "shelljs": "~0.8.4"
   },
-  "browserslist": [
-    "last 2 Chrome versions"
-  ],
-  "scripts": {
-    "build:contracts": "cd contracts/nft-contract && ./build.sh && cd ../.. && cd contracts/market-contract && ./build.sh && cd ../.. && cd contracts/fungible-token-contract && ./build.sh && cd ../..",
-    "prestart": "rm -rf ./parcel-cache",
-    "start": "cross-env REACT_APP_ENV=dev parcel src/index.html --open",
-    "start:helper": "cross-env REACT_APP_ENV=dev REACT_APP_API_HELPER=true parcel src/index.html --open",
-    "fix": "eslint src/ test/ --fix",
-    "test:unit": "(cd contracts && cargo test -- --nocapture --color always)",
-    "prebuild": "rm -rf ./dist",
-    "build": "parcel build src/index.html --public-url https://near-apps.github.io/nft-market/"
+  "dependencies": {
+    "bn.js": "^5.2.0",
+    "bootstrap": "^5.1.3",
+    "near-api-js": "~0.43.1",
+    "react": "~17.0.1",
+    "react-bootstrap": "^2.1.0",
+    "react-dom": "~17.0.1",
+    "regenerator-runtime": "~0.13.5"
+  },
+  "resolutions": {
+    "@babel/preset-env": "7.13.8"
+  },
+  "jest": {
+    "moduleNameMapper": {
+      "\\.(jpg|ico|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/src/__mocks__/fileMock.js",
+      "\\.(css|less)$": "<rootDir>/src/__mocks__/fileMock.js"
+    },
+    "setupFiles": [
+      "<rootDir>/src/jest.init.js"
+    ],
+    "testEnvironment": "near-cli/test_environment",
+    "testPathIgnorePatterns": [
+      "<rootDir>/contract/",
+      "<rootDir>/node_modules/"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   }
 }

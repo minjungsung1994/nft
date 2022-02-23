@@ -1,90 +1,99 @@
-import React, { useContext, useEffect, useState } from 'react';
+import "regenerator-runtime/runtime";
+import React, { useEffect, useState } from "react";
+import { login, logout } from "./utils";
 
-import { appStore, onAppMount } from './state/app';
+// React Bootstrap css
+import "bootstrap/dist/css/bootstrap.min.css";
 
-import { Wallet } from './components/Wallet';
-import { Contract } from './components/Contract';
-import { Gallery } from './components/Gallery';
+// React Bootstraps imports
+import { Nav, Navbar, Container, Row, Card, Alert } from "react-bootstrap";
 
-import Avatar from 'url:./img/avatar.jpg';
-import NearLogo from 'url:./img/near_icon.svg';
+// Custom Components
+import MintingTool from "./Components/MintingTool";
+import InfoBubble from "./Components/InfoBubble";
 
-import './App.scss';
+// assets
+import Logo from "./assets/logo-white.svg";
 
-const App = () => {
-	const { state, dispatch, update } = useContext(appStore);
+import getConfig from "./config";
+const { networkId } = getConfig(process.env.NODE_ENV || "development");
 
-	const { app, views, app: {tab, snack}, near, wallet, contractAccount, account, loading } = state;
+export default function App() {
+  const [userHasNFT, setuserHasNFT] = useState(false);
 
-	const [profile, setProfile] = useState(false);
+  useEffect(() => {
+    const receivedNFT = async () => {
+      console.log(
+        await window.contract.check_token({
+          id: `${window.accountId}-go-team-token`,
+        })
+      );
+      if (window.accountId !== "") {
+        console.log(
+          await window.contract.check_token({
+            id: `${window.accountId}-go-team-token`,
+          })
+        );
 
-	const onMount = () => {
-		dispatch(onAppMount());
-	};
-	useEffect(onMount, []);
+        setuserHasNFT(
+          await window.contract.check_token({
+            id: `${window.accountId}-go-team-token`,
+          })
+        );
+      }
+    };
+    receivedNFT();
+  }, []);
 
-
-	const signedIn = ((wallet && wallet.signedIn));
-
-	if (profile && !signedIn) {
-		setProfile(false);
-	}
-
-	return <>
-		{ loading && <div className="loading">
-			<img src={NearLogo} />
-		</div>
-		}
-		{
-			snack &&
-			<div className="snack">
-				{snack}
-			</div>
-		}
-
-		<div className="background"></div>
-
-		<div id="menu">
-			<div>
-				<img style={{ opacity: signedIn ? 1 : 0.25 }} src={Avatar}
-					onClick={() => setProfile(!profile)}
-				/>
-			</div>
-			<div>
-				{!signedIn ? <Wallet {...{ wallet }} /> : account.accountId}
-			</div>
-			{
-				profile && signedIn && <div id="profile">
-					<div>
-						{
-							wallet && wallet.signedIn && <Wallet {...{ wallet, account, update, dispatch, handleClose: () => setProfile(false) }} />
-						}
-					</div>
-				</div>
-			}
-		</div>
-
-
-		{
-			signedIn && <div id="tabs">
-				<div onClick={() => update('app.tab', 1)} style={{ background: tab === 1 ? '#fed' : '' }}>Market</div>
-				<div onClick={() => update('app.tab', 2)} style={{ background: tab === 2 ? '#fed' : '' }}>My NFTs</div>
-				<div onClick={() => update('app.tab', 3)} style={{ background: tab === 3 ? '#fed' : '' }}>Mint</div>
-			</div>
-		}
-
-		{ signedIn && tab === 3 &&
-			<div id="contract">
-				{
-					signedIn &&
-					<Contract {...{ near, update, wallet, account }} />
-				}
-			</div>
-		}
-		<div id="gallery">
-			<Gallery {...{ app, views, update, loading, contractAccount, account, dispatch }} />
-		</div>
-	</>;
-};
-
-export default App;
+  return (
+    <React.Fragment>
+      {" "}
+      <Navbar bg='dark' variant='dark'>
+        <Container>
+          <Navbar.Brand href='#home'>
+            <img
+              alt=''
+              src={Logo}
+              width='30'
+              height='30'
+              className='d-inline-block align-top'
+            />{" "}
+            NEAR Protocol
+          </Navbar.Brand>
+          <Navbar.Toggle aria-controls='responsive-navbar-nav' />
+          <Navbar.Collapse id='responsive-navbar-nav'>
+            <Nav className='me-auto'></Nav>
+            <Nav>
+              <Nav.Link
+                onClick={window.walletConnection.isSignedIn() ? logout : login}
+              >
+                {window.walletConnection.isSignedIn()
+                  ? window.accountId
+                  : "Login"}
+              </Nav.Link>{" "}
+            </Nav>
+          </Navbar.Collapse>
+        </Container>
+      </Navbar>
+      <Container style={{ marginTop: "3vh" }}>
+        {" "}
+        <Row>
+          <Alert>
+            Hello! We are going to mint an NFT and have it appear in your
+            wallet! Sign in, mint your nft and head over to{" "}
+            <a href='https://wallet.testnet.near.org/'>
+              wallet.testnet.near.org
+            </a>{" "}
+            to see your new "Go Team" NFT!
+          </Alert>
+        </Row>
+        <Row>
+          <InfoBubble />
+        </Row>
+        <Row style={{ marginTop: "3vh" }}>
+          <MintingTool userNFTStatus={userHasNFT} />
+        </Row>
+      </Container>
+    </React.Fragment>
+  );
+}
